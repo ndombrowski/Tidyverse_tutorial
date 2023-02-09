@@ -1,5 +1,7 @@
 ---
 title: An introduction into the tidyverse
+project:
+  type: website
 execute:
   eval: true
 format:
@@ -8,9 +10,10 @@ format:
     df-print: paged
     toc: true
     toc-depth: 3
-    output-file: index.html
-    search: true
-    theme: cosmo
+    output-file: index.html  
+theme:
+  light: cosmo
+  dark: darkly
 code-block-bg: true
 code-block-border-left: "#31BAE9"
 editor_options: 
@@ -48,6 +51,12 @@ The basic workflow in tidying and visualizing data usually looks as follows:
 ![](C:/Users/ndmic/WorkingDir/Notebooks/Pictures/tidverse1.png){width=50% fig-align="left"}
 
 In this tutorial we will learn about the Tidyverse by exploring the palmerpenguins dataset, a data set containing measurements of different species of penguins. 
+
+:::{.callout-note}
+Whenever we ask a question the solution/the code will be hidden.
+  
+You can show the code by pressing on \<Code\>.
+:::
 
 
 ## Some background information
