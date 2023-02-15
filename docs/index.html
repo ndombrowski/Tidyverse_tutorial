@@ -3875,21 +3875,21 @@ window.onload = function() {
 
 <body>
 
-<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
   <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
   <li><a href="#some-background-information" id="toc-some-background-information" class="nav-link active" data-scroll-target="#some-background-information">Some background information</a>
-  <ul class="collapse">
+  <ul>
   <li><a href="#shortcuts-and-other-helpful-tips" id="toc-shortcuts-and-other-helpful-tips" class="nav-link" data-scroll-target="#shortcuts-and-other-helpful-tips">Shortcuts and other helpful tips</a></li>
   <li><a href="#a-word-about-pipes" id="toc-a-word-about-pipes" class="nav-link" data-scroll-target="#a-word-about-pipes">A word about Pipes</a></li>
   </ul></li>
   <li><a href="#setting-up-our-working-environment" id="toc-setting-up-our-working-environment" class="nav-link" data-scroll-target="#setting-up-our-working-environment">Setting up our working environment</a></li>
   <li><a href="#useful-verbs" id="toc-useful-verbs" class="nav-link" data-scroll-target="#useful-verbs">Useful verbs</a></li>
   <li><a href="#filter" id="toc-filter" class="nav-link" data-scroll-target="#filter">Filter</a>
-  <ul class="collapse">
+  <ul>
   <li><a href="#exercise" id="toc-exercise" class="nav-link" data-scroll-target="#exercise">Exercise</a></li>
   <li><a href="#excluding-data" id="toc-excluding-data" class="nav-link" data-scroll-target="#excluding-data">Excluding data</a></li>
   <li><a href="#filtering-using-characters" id="toc-filtering-using-characters" class="nav-link" data-scroll-target="#filtering-using-characters">Filtering using characters</a></li>
@@ -3907,18 +3907,20 @@ window.onload = function() {
   <li><a href="#combining-verbs" id="toc-combining-verbs" class="nav-link" data-scroll-target="#combining-verbs">Combining verbs</a></li>
   <li><a href="#exercise-3" id="toc-exercise-3" class="nav-link" data-scroll-target="#exercise-3">Exercise</a></li>
   <li><a href="#missing-values" id="toc-missing-values" class="nav-link" data-scroll-target="#missing-values">Missing values</a>
-  <ul class="collapse">
+  <ul>
   <li><a href="#exercise-4" id="toc-exercise-4" class="nav-link" data-scroll-target="#exercise-4">Exercise</a></li>
   <li><a href="#replace-the-missing-values-with-the-mean-or-median-or" id="toc-replace-the-missing-values-with-the-mean-or-median-or" class="nav-link" data-scroll-target="#replace-the-missing-values-with-the-mean-or-median-or">Replace the missing values with the mean (or median, or …)</a></li>
   <li><a href="#drop-rows-with-missing-values" id="toc-drop-rows-with-missing-values" class="nav-link" data-scroll-target="#drop-rows-with-missing-values">Drop rows with missing values</a></li>
   </ul></li>
   <li><a href="#summarize-data" id="toc-summarize-data" class="nav-link" data-scroll-target="#summarize-data">Summarize data</a>
-  <ul class="collapse">
+  <ul>
   <li><a href="#group-by-and-summarize" id="toc-group-by-and-summarize" class="nav-link" data-scroll-target="#group-by-and-summarize">Group by and summarize</a></li>
   </ul></li>
   <li><a href="#exercise-5" id="toc-exercise-5" class="nav-link" data-scroll-target="#exercise-5">Exercise</a></li>
   </ul>
 </nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
 </div>
 <main class="content" id="quarto-document-content">
 
@@ -5012,6 +5014,20 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       });
     }
   }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+    var links = window.document.querySelectorAll('a:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+          // target, if specified
+          link.setAttribute("target", "_blank");
+      }
+    }
 });
 </script>
 </div> <!-- /content -->

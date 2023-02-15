@@ -6,10 +6,14 @@ execute:
   eval: true
 format:
   html:
+    fig-width: 5
+    fig-height: 4
     embed-resources: true
     df-print: paged
     toc: true
-    toc-depth: 3
+    toc-location: left
+    toc-depth: 4
+    link-external-newwindow: true
     output-file: index.html  
 theme:
   light: cosmo
