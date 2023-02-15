@@ -79,6 +79,11 @@ If in R you want to use the newer version by default go to Tools --> Global opti
 
 Now, having this out of the way, lets get started with loading our data and learning about some useful verbs in the tidyverse.
 
+:::{.callout-important}
+
+If you are working in base R you might have an error when using `|>` if you are working with an R version below 4.1. If you get an error and can't update or don't want to update R use `%>%` instead. For this to work, you need to have the tidyverse library loaded.
+
+:::
 
 
 ## Setting up our working environment
@@ -87,7 +92,7 @@ For this tutorial to run we need to install some tools first. Specifically, we n
 
 ```{r}
 #| eval: false
-remotes::install_github("allisonhorst/palmerpenguins")
+install.packages("palmerpenguins")
 install.packages("tidyverse")
 ```
 
@@ -104,8 +109,6 @@ library(tidyverse)      #tools for transforming and visualizing data
 Let's have a first look at the data. Notice: If you view the hmtl you can view the full table by clicking in the little arrow at the top, right-hand corner of the table.
 
 ```{r}
-#| eval: true
-
 #look at the first rows of the penguins dataset
 head(penguins)
 ```
@@ -129,6 +132,7 @@ The `summary()` is another useful way to get a quick overview about our data:
 ```{r}
 summary(penguins)
 ```
+
 For each data column we get the number of observations (for factor data) as well basic summary statistics for all numerical data. Another useful piece of information we get is the number of missing values for each column. 
 
 
@@ -144,6 +148,15 @@ We use filter if we only want to look at only a subset of our observations based
 To get started, let's only select data from 2007. To do this, we use our first **operator** `==` which only selects rows where the year is exactly 2007. 
 
 In the syntax below, we use the pipe to input the penguins dataframe into the filter function.
+
+
+:::{.callout-important}
+
+Again a reminder:
+If you are working in base R you might have an error when using `|>` if you are working with an R version below 4.1. If you get an error and can't update or don't want to update R use `%>%` instead. For this to work, you need to have the tidyverse library loaded.
+
+:::
+
 
 ```{r}
 #only print data of penguins if the year is (==, a conditional operator) 2007
@@ -350,9 +363,7 @@ Notice, that the column with the body mass in kg is not the dataframe right now.
 
 ## Exercise
 
-Answer the following question:
-
-**Calculate the bill length in cm**
+How would you calculate the bill length in cm?
 
 ```{r}
 #| code-fold: true

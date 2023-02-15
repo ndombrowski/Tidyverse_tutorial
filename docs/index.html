@@ -3990,13 +3990,26 @@ Note
 <p>As we will see in a second the tidyverse consists of a list of verbs we can use to transform data. Each individual verb (i.e. filter, select, mutate) is quite simple and solving more complex problems requires combining multiple verbs. We can do this by using pipes that combine different verbs (<code>|&gt;</code> or its older version <code>%&gt;%</code>). Using pipes results in much shorter code compared to using nested code or storing the output of each step in a different variable. There is some differences between the two, but for now you can use them interchangeably.</p>
 <p>If in R you want to use the newer version by default go to Tools –&gt; Global options –&gt; Code –&gt; Use native pipe operator.</p>
 <p>Now, having this out of the way, lets get started with loading our data and learning about some useful verbs in the tidyverse.</p>
+<div class="callout-important callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you are working in base R you might have an error when using <code>|&gt;</code> if you are working with an R version below 4.1. If you get an error and can’t update or don’t want to update R use <code>%&gt;%</code> instead. For this to work, you need to have the tidyverse library loaded.</p>
+</div>
+</div>
 </section>
 </section>
 <section id="setting-up-our-working-environment" class="level2">
 <h2 class="anchored" data-anchor-id="setting-up-our-working-environment">Setting up our working environment</h2>
 <p>For this tutorial to run we need to install some tools first. Specifically, we need to download the data we will explore today and the tools of the tidyverse. To do this type the following into your R notebook or console:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;allisonhorst/palmerpenguins&quot;</span>)</span>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;palmerpenguins&quot;</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;tidyverse&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Once this is done, we can start by loading the packages:</p>
@@ -4078,6 +4091,19 @@ Note
 </div>
 <p>To get started, let’s only select data from 2007. To do this, we use our first <strong>operator</strong> <code>==</code> which only selects rows where the year is exactly 2007.</p>
 <p>In the syntax below, we use the pipe to input the penguins dataframe into the filter function.</p>
+<div class="callout-important callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Again a reminder: If you are working in base R you might have an error when using <code>|&gt;</code> if you are working with an R version below 4.1. If you get an error and can’t update or don’t want to update R use <code>%&gt;%</code> instead. For this to work, you need to have the tidyverse library loaded.</p>
+</div>
+</div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#only print data of penguins if the year is (==, a conditional operator) 2007</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span></span>
@@ -4400,8 +4426,7 @@ With writing <code>body_mass_kg =</code> we say that we want to add a new column
 </section>
 <section id="exercise-2" class="level2">
 <h2 class="anchored" data-anchor-id="exercise-2">Exercise</h2>
-<p>Answer the following question:</p>
-<p><strong>Calculate the bill length in cm</strong></p>
+<p>How would you calculate the bill length in cm?</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
