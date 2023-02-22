@@ -110,7 +110,13 @@ library(palmerpenguins)  #contains our dataset
 library(tidyverse)      #tools for transforming and visualizing data
 ```
 
-Let's have a first look at the data. Notice: If you view the hmtl you can view the full table by clicking in the little arrow at the top, right-hand corner of the table.
+In this tutorial, we work with a published dataset, the palmer penguins data, so there are no requirements other than downloading the two packages.
+
+::: {layout-nrow=1}
+![Image taken from: https://allisonhorst.github.io/palmerpenguins/reference/figures/lter_penguins.png](https://allisonhorst.github.io/palmerpenguins/reference/figures/lter_penguins.png)
+:::
+
+Let's start by taking a look at our penguin dataset. Notice: If you view the hmtl you can view the full table by clicking in the little arrow at the top, right-hand corner of the table.
 
 ```{r}
 #look at the first rows of the penguins dataset
@@ -270,6 +276,25 @@ penguins |>
 We work with 104 rows of data.
 
 </details>
+
+
+**To do** 
+
+filtering with two targets
+
+```{r}
+penguins |>
+  filter(island == "Biscoe" | island == "Dream") |> 
+  dim()
+
+penguins |>
+  filter(island == c("Biscoe", "Dream")) |> 
+  dim()
+
+penguins |>
+  filter(island %in% c("Biscoe", "Dream")) |> 
+  dim()
+```
 
 
 
@@ -602,9 +627,10 @@ penguins |>
 
 The difference, is that `drop_na()` drops the full row, regardless where data is missing in our dataframe. In total 11 rows get deleted. In contrast `na.rm = TRUE` only removes NAs if they are found in the body_mass_g column, so only 2 rows are deleted.
 
-When we look at one of our first commands `summary(penguins)` we have seen that 11 values are missing for the sex while only 2 values were missing for the body_mass_g data explaining the difference between `drop_na` (which acts on the full dataframe and removes 11 rows) and `na.rm` (which in the example above only removes missing data from the body mass column).
+When we look at one of our first commands `summary(penguins)` we have seen that 11 values are missing for the sex column while only 2 values were missing for the body_mass_g column explaining the difference between `drop_na` (which acts on the full dataframe and removes 11 rows) and `na.rm` (which in the example above only removes missing data from the body mass column).
 
 In the end its up to you and the experimental setup how you deal with missing data, however, it is important to understand what happens when removing data a certain way.
+
 
 ## Exercise
 
@@ -628,4 +654,44 @@ Notice: in this case it doesn't make a difference if we use drop_na or na.rm=TRU
 
 </details>
 
-Summarizing our data is a good way to get a first feel for the data. Another good option to explore the data is to visualize this and we will do this in our next tutorial exploring ggplot2.
+
+### Addon on `across()`: Summarizing multiple columns with arguments
+
+We can also calculate the mean using `na.rm = True` on more than one data column. One way to do this is this:
+
+```{r}
+penguins |> 
+  group_by(species)  |> 
+  summarize(avg_weight = mean(body_mass_g, na.rm = TRUE),
+            avg_length = mean(bill_length_mm, na.rm = TRUE))
+```
+
+Now, this is fine for a few calculations, but gets tedious very quickly. Luckily, we can use the `across()` function to make our life easier. 
+
+To calculate the mean across all columns, we identify all columns with numeric values using the `where` function and do the same transformations (here calculating the mean) across multiple columns. `across()` takes us input the:
+
+- Columns we want to transform, here all the columns that are numeric
+- The function we want to apply, here we want to calculate the mean
+- Any additional arguments we want to use, i.e. remove NAs
+
+```{r}
+penguins %>% 
+  group_by(species) %>% 
+  summarize(across(where(is.numeric), mean, na.rm = TRUE))
+```
+
+Of note, when using additional arguments it can be a bit ambiguous how they are used, i.e. is `na.rm` used once per across() or once per group? A newer way to do the same thing (that however requires some additional syntax we have not covered):
+
+```{r}
+penguins %>% 
+  group_by(species) %>% 
+  summarize(across(where(is.numeric),  ~ mean(.x, na.rm = TRUE)))
+```
+
+When we use `~` we use what is called a lambda function, or anonymous function, and we use  `.x` to indicate where the variable in `across()` is used. These two elements come from the purr package that is useful if you want to write effective functions with R.
+
+Explaining the details are out of the scope of this tutorial but if you want to read more about this (and have some good examples for using `across()` check out this [post](https://willhipson.netlify.app/post/dplyr_across/dplyr_across/)
+
+
+
+
