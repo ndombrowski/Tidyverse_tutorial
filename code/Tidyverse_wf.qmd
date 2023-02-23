@@ -1,0 +1,785 @@
+---
+title: An introduction into the tidyverse
+project:
+  type: website
+execute:
+  eval: true
+format:
+  html:
+    fig-width: 5
+    fig-height: 4
+    embed-resources: true
+    df-print: paged
+    toc: true
+    toc-location: left
+    toc-depth: 4
+    link-external-newwindow: true
+    output-file: index.html  
+theme:
+  light: cosmo
+  dark: darkly
+code-block-bg: true
+code-block-border-left: "#31BAE9"
+editor_options: 
+  chunk_output_type: inline
+---
+
+
+
+```{r}
+#| echo: false
+
+library(knitr)
+knitr::opts_chunk$set(eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE, 
+                      comment = "", results="markup")
+#https://bookdown.org/yihui/rmarkdown/html-document.html
+#install.packages('knitr', dependencies = TRUE)
+#install.packages("devtools", lib="~/R/lib")
+#library(DT)
+#devtools::session_info()
+```
+
+The aim of this tutorial is to introduce students to the key features of the tidyverse using a public dataset (so there are no requirements other to have a working version of R/Rstudio and installing some packages).
+
+The tidyverse is a collection of data science tools to tidy and visualize data and includes several different R libraries suited for a broad range of tasks:
+
+- ggplot2, for data visualization
+- dplyr: for data manipulation
+- tidyr: for data tidying
+- readr: for data import
+- purrr: for functional programming
+- tibble: for manipulating [tibbles](https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html), a modern re-imagining of data frames
+- stringr: for manipulating strings
+- forcats: for manipulating factors
+
+The basic workflow in tidying and visualizing data usually looks as follows:
+
+![](C:/Users/ndmic/WorkingDir/Notebooks/Pictures/tidverse1.png){width=90% fig-align="left"}
+
+In this tutorial we will learn about the Tidyverse by exploring the palmerpenguins dataset, a data set containing measurements of three different species of penguins. 
+
+![Image taken from: https://allisonhorst.github.io/palmerpenguins/reference/figures/lter_penguins.png](../images/lter_penguins.png){width=70%}
+
+
+
+:::{.callout-note}
+Whenever we ask a question the code solution will be hidden.
+You can show the code by pressing on \<Click me to see an answer\>.
+:::
+
+
+## Some background information
+
+### Shortcuts and other helpful tips
+
+When working in RMarkdown or Quarto documents, shortcuts allow you to use certain key combinations to insert pipes, cell blocks and other useful things without having to type everything and allows to speed up things.
+
+- **Ctrl/Cmd + Shift + M** is used to insert a pipe.
+- **Ctrl/Cmd + Alt + I** is used  to insert a new code cell block.
+- Pressing `Tab` while writing code auto-completes text. Try this by tying `?filt` and pressing `Tab`, you can see all options coming up and you can select the one you want by using the arrow symbols and pressing enter
+
+
+
+### A word about Pipes 
+
+As we will see in a second the tidyverse consists of a list of verbs that we can use to transform data. Each individual verb (i.e. filter, select, mutate) is quite simple and solving more complex problems requires combining multiple verbs. We can do this by using pipes that combine different verbs by using ``|>`` or its older version ``%>%``. Using pipes results in much shorter code compared to using nested code or storing the output of each step in a different variable. There is some differences between the two pipe versions, but for now you can use them interchangeably. 
+
+If in R you want to use the newer version by default go to Tools --> Global options --> Code --> Use native pipe operator.
+
+Now, having this out of the way, lets get started with loading our data and learning about some useful verbs in the tidyverse.
+
+
+
+:::{.callout-important}
+
+You might get an error when using `|>` if you are working with an R version below 4.1. If you get an error and can't update or don't want to update R version use `%>%` instead. To be able to use either pipe you need to have the tidyverse library loaded.
+
+:::
+
+
+## Initial data exploration
+
+For this tutorial to run we need to install some tools first. Specifically, we need to download the tools of the tidyverse and the data we will explore today. To do this type and execute the following into your R notebook or console:
+
+```{r}
+#| eval: false
+install.packages("palmerpenguins")
+install.packages("tidyverse")
+```
+
+Once this is done, we can start by loading the packages:
+
+```{r}
+#| eval: true
+#| warning: false
+#load packages
+library(palmerpenguins)  #contains our dataset
+library(tidyverse)      #tools for transforming and visualizing data
+```
+
+Let's start by taking a look at the first few rows of our dataframe using the `head()` function. 
+
+Notice: If you view the hmtl version of this tutorial you can view more columns of the table by clicking on the little arrow at the top, right-hand corner of the table.
+
+```{r}
+head(penguins)
+```
+
+We see that we have 8 column of data, with different categorical data (species, sex and island) as well as different numerical measurements.
+
+Next, let's look a bit in more detail at the structure of the data:
+
+```{r}
+str(penguins)
+```
+
+Some key features we can take from this:
+
+- The total amount of data we work with, i.e. 344 rows and 8 columns of data 
+- Te names and content of all 8, i.e. species, bill_length and sex
+- The type of data we have for each columns, i.e. factors, numeric/integer, character
+- The unique levels for some variables, i.e. we compare 3 different penguin species
+- If we look closely, we can see whether or not we have to worry about NAs (i.e. missing data). For example, we see an NA in the sex column.
+
+The `summary()` function is another useful way to get a quick overview about our data and gives us some useful summary statistics:
+
+```{r}
+summary(penguins)
+```
+
+For each data column we get the number of observations (for factor data) as well as basic summary statistics for all numerical data. Another useful piece of information we get is the number of missing values for each column. 
+
+
+
+## Useful verbs
+
+## Filter
+
+We use filter if we only want to look at only a subset of our observations based on a condition.
+
+![](C:/Users/ndmic/WorkingDir/Notebooks/Pictures/tidverse2.png){width=50% fig-align="center"}
+
+To get started, let's only select data from 2007. To do this, we use our first **operator**, i.e. `==`, which only selects rows where the year is exactly 2007. 
+
+In the syntax below, we use the pipe to input the penguins dataframe into the filter function.
+
+:::{.callout-important}
+Again a reminder:
+If you are working in base R you might have an error when using `|>` if you are working with an R version below 4.1. If you get an error and can't update or don't want to update R use `%>%` instead. For this to work, you need to have the tidyverse library loaded.
+:::
+
+
+```{r}
+#only print data of penguins if the year is (==, a conditional operator) 2007
+penguins |>
+  filter(year == 2007)
+```
+
+Now we see, that we only have 110 row compared to the 334 rows in our original dataframe. 
+
+Something to keep in mind that when doing this the original penguins dataframe is retained. Filter is simply returning a new dataset with fewer rows to the screen but not storing it. If we want to store the modified dataframe in our environment, we need to store it in a new variable like this:
+
+```{r}
+#store the output of the filtering step in a new variable, penguins_2017
+penguins_2017 <-
+  penguins |>
+    filter(year == 2007)
+
+#view the content of penguins_2017
+head(penguins_2017)
+```
+
+There are other operators that might come in handy for filtering dataframes:
+
+| Operator 	| Description              	|
+|----------	|--------------------------	|
+| <        	| less than                	|
+| <=       	| less than or equal to    	|
+| >        	| greater than             	|
+| >=       	| greater than or equal to 	|
+| ==       	| exactly equal to         	|
+| !=       	| not equal to             	|
+| !x       	| Not x                    	|
+| x \| y   	| x OR y                   	|
+| x & y    	| x AND y                  	|
+
+
+### Exercise
+
+1. How many observations, i.e. rows of data, do we have for the year 2009? 
+2. How many observations, i.e. rows of data, do we have if we only consider penguins that have flippers equal to or longer than 200 mm?
+
+<details>
+    <summary>Click me to see an answer</summary>
+
+**Question 1**
+
+```{r}
+#we have 120 rows of data
+penguins |>
+  filter(year == 2009)
+```
+
+**Question 2**
+
+```{r}
+#we work with 152 rows of data
+penguins |>
+  filter(flipper_length_mm >= 200)
+```
+
+**Question 2 alternative**
+
+```{r}
+#we can also use the pipe and use a base R function to count the number of rows instead of looking at the table
+penguins |>
+  filter(flipper_length_mm >= 200) |> 
+  nrow()
+```
+
+</details>
+
+
+
+### Excluding data
+
+We can also easily filter by excluding data using `!=` symbol. For example, we remove data from the year 2007 like this:
+
+```{r}
+penguins |>
+  filter(year != 2007)
+```
+
+
+### Filtering using characters
+
+We can also filter for characters, i.e. filter the data to only retain observations for a single penguin species. The only thing we have to watch out for is that if we work with characters (i.e. Adelie), we have to surround these characters with quotes.
+
+```{r}
+#only return the data from Adelie penguins
+penguins |>
+  filter(species == "Adelie")
+```
+
+
+
+### Filter using more than one column
+
+We can also filter dataframes by setting conditions for different columns. For example, we might want to select data from 2007 and only the Adelie penguins. To do this we specify multiple conditions that we separate by a comma. Each `==` expression is called an argument.
+
+```{r}
+#only return the data from Adelie penguins collected in 2007
+penguins |>
+  filter(year == 2007, species == "Adelie")
+```
+
+
+
+
+### Exercise
+
+**How many observations do we have when we exclude data from 2008 and only look at penguins observed on the island Biscoe?**
+
+<details>
+    <summary>Click me to see an answer</summary>
+
+```{r}
+penguins |>
+  filter(year != 2008, island == "Biscoe")
+```
+
+We work with 104 rows of data.
+
+</details>
+
+
+### Using filter with several targets
+
+How would we filter if we wanted data from different targets, i.e. if we only wanted to select data collected from the islands Biscoe and Dream? There are different options.
+
+1. We could exclude data not matching our criteria
+
+```{r}
+penguins |>
+  filter(island != "Torgersen") |> 
+  nrow()
+```
+However, this is **not ideal** since we have to figure out what the name of the island is that doesn't match our criteria, with larger datasets that might not be as easy.
+
+2. We could use the OR, `|` , operator:
+
+```{r}
+penguins |>
+  filter(island == "Biscoe" | island == "Dream") |> 
+  nrow()
+```
+This is definitely better, but requires a lot of typing especially if we have more categories.
+
+3. We use a vector list and filter with it using the `%in%` operator. With it we basically ask whether Biscoe is found in the island column and then whether Dream is found in the same column as well.
+
+```{r}
+list_of_species <- c("Biscoe", "Dream")
+  
+penguins |>
+  filter(island %in% list_of_species) |> 
+  nrow()
+```
+
+Generally, this is the preferred option, since we can easily re-use `list_of_species` for other things and its easy to see how we can add a long list of characters into it. 
+
+
+
+### Exercise
+
+**How many observations do we have for Adelie and Gentoo penguins in 2007 ?**
+
+<details>
+    <summary>Click me to see an answer</summary>
+
+```{r}
+list_of_species <- c("Adelie", "Gentoo")
+  
+penguins |>
+  filter(species %in% list_of_species, year == 2007) |> 
+  nrow()
+```
+We work with 84 rows of data.
+
+</details>
+
+
+
+
+
+
+
+## Select
+
+The select verbs allows to keep or drop columns using their names and types:
+
+```{r}
+#select two columns of our penguin dataframe
+penguins |> 
+  select(species, sex)
+```
+
+Again, we can also negate a selection. 
+
+```{r}
+#remove a column
+penguins |> 
+  select(!species)
+```
+
+If we want to exclude more than one column, we have to use a vector list:
+
+```{r}
+penguins |> 
+  select(!c(species, sex))
+```
+
+
+## Selection helpers
+
+[Selection helpers](https://tidyselect.r-lib.org/reference/starts_with.html) helpers are a powerful feature of the tidyverse that we can use to select data using patterns:
+
+- starts_with(): Starts with an exact prefix
+- ends_with(): Ends with an exact suffix
+- contains(): Contains a literal string
+- matches(): Matches a regular expression
+- num_range(): Matches a numerical range like x01, x02, x0
+
+For example, what is if we only want to select columns that contain mm measurements? Easy, we can simply search for any column that contain our pattern of interest: 
+
+```{r}
+penguins |> 
+  select(contains("mm"))
+```
+
+This becomes even more powerful if we use operational arguments to combine different statements. I.e. `&` and `|` take the intersection or the union, respectively, of two selections:
+
+```{r}
+#only select columns with mm measurements AND from the bill
+penguins |> 
+  select(contains("mm") & contains("bill"))
+```
+
+```{r}
+#select everything if it ends with mm OR g
+penguins |> 
+  select(contains("mm") | ends_with("g"))
+```
+
+
+**Exercise**
+
+Select only columns if they contain length measurements or species information.
+
+<details>
+    <summary>Click me to see an answer</summary>
+
+```{r}
+penguins |> 
+  select(contains("length") | contains("species"))
+```
+
+</details>
+
+
+## Distinct
+
+The distinct verb is a quick way to summarize all distinct values or characters in a column:
+
+```{r}
+penguins |> 
+  distinct(island)
+```
+
+
+
+**Exercise**
+
+Over how many different years were measurements taken?
+
+<details>
+    <summary>Click me to see an answer</summary>
+
+```{r}
+penguins |> 
+  distinct(year)
+```
+
+</details>
+
+
+
+
+## Arrange
+
+Arrange sorts the observations in a dataset. This can be useful when you want to know the most extreme data. By default, we sort by starting with the lowest value first.
+
+![](C:/Users/ndmic/WorkingDir/Notebooks/Pictures/tidyverse3.png){width=50% fig-align="center"}
+
+
+```{r}
+penguins |> 
+  arrange(bill_length_mm)
+```
+
+We can also sort in descending order.
+
+```{r}
+penguins |> 
+  arrange(desc(bill_length_mm))
+```
+
+
+
+
+
+**Exercise**
+
+What are the three largest body mass measurements?
+
+<details>
+    <summary>Click me to see an answer</summary>
+
+```{r}
+penguins |> 
+  arrange(desc(body_mass_g))
+```
+
+The largest measurements are: 6300, 6050 and 6000 g
+
+
+## Mutate
+
+Mutate changes or adds variables in your data set.
+
+![](C:/Users/ndmic/WorkingDir/Notebooks/Pictures/tidyverse4.png){width=50% fig-align="center"}
+
+For example, we could change the body mass from the measurement in g to kg using basic math operations.  
+With writing ``body_mass_kg =`` we give the new column with the mutated data a descriptive header. Mutated columns can be found at the end of our table.
+
+```{r}
+penguins |> 
+  mutate(body_mass_kg = body_mass_g / 1000)
+```
+
+We can also easily combine different columns, i.e. we could multiply the bill length with the depth:
+
+```{r}
+penguins |> 
+  mutate(bill_area = bill_length_mm * bill_depth_mm)
+```
+
+
+
+**Exercise**
+
+Add a new column with the bill length in cm.
+
+<details>
+    <summary>Click me to see an answer</summary>
+
+```{r}
+penguins %>%
+  mutate(bill_length_cm = bill_length_mm / 10)
+```
+
+</details>
+
+
+## Count
+
+The count verb is ideal to count observations for each group:
+
+```{r}
+penguins |> 
+  count(species) 
+```
+
+
+**Exercise**
+
+Count the number of observations per species and island.
+
+<details>
+    <summary>Click me to see an answer</summary>
+
+```{r}
+penguins |> 
+  count(species, island) 
+```
+</details>
+
+
+
+
+
+## Other useful verbs
+
+There are other verbs that we don't cover in this tutorial, but they are anyhow useful for data transformation. Below you find a list of verbs with link to a more detailed explanation including some examples.
+
+- [Unite](https://tidyr.tidyverse.org/reference/unite.html) multiple columns into one by pasting strings together
+- [Separate](https://tidyr.tidyverse.org/reference/separate.html) a character column into multiple columns with a regular expression or numeric locations  
+- [ Pivot longer and wider](https://tidyr.tidyverse.org/articles/pivot.html) to convert data sets from wide and long format and vice versa
+
+
+
+## Combining verbs
+
+As we said in the beginning, we can use the pipe to combine several verbs. 
+
+Let's identify from what island the species with the three highest bill length measurements came from in the year 2007:
+
+```{r}
+penguins %>%
+  filter(year == 2007) |> 
+  select(species, island, bill_length_mm) |> 
+  arrange(desc(bill_length_mm)) |> 
+  head(3)
+```
+
+
+
+
+## Exercise
+
+Answer the following question:
+
+**What is the highest body mass in kg recorded for Gentoo penguins in 2007 and from what island did that specimen come from?**
+
+<details>
+    <summary>Click me to see an answer</summary>
+
+```{r}
+penguins %>%
+  mutate(body_mass_kg = body_mass_g / 1000) |> 
+  filter(species == "Gentoo", year == 2007) |> 
+  arrange(desc(body_mass_kg)) |> 
+  select(island, body_mass_kg) |> 
+  head(1)
+```
+
+Answer: 6.30 kg and from Biscoe.
+
+</details>
+
+
+
+## Missing values
+
+When we initially explored our data frame, we saw some data was missing (i.e. NA = not applicable).  
+
+With some other datasets you might encounter Nan, which is used for data not representing a number.
+
+
+### Exercise
+
+As we have seen when we explored our dataframe in the beginning, some columns contain missing data.
+
+There are different ways to deal with missing values and what you do depends on your data. However, there are some general strategies:
+
+- Impute data, i.e. fill missing values with a computed number, such as the mean
+- Drop rows or columns with missing values
+
+
+### Replace the missing values with the mean (or median, or ...)
+
+To do this we mutate the content of a column by using the `replace` function in which we provide:
+
+- The column affected
+- What values we want to replace (NAs)
+- With what we want to replace the NAs with (the mean in our example)
+
+Additionally, since we can not calculate the mean if the values contain NAs, we remove them with[ `na.rm = TRUE`](https://rdrr.io/cran/questionr/man/na.rm.html)
+
+```{r}
+penguins |> 
+  mutate(bill_length_mm
+         = replace(bill_length_mm, is.na(bill_length_mm), mean(bill_length_mm, na.rm = TRUE)))
+```
+
+
+### Drop rows with missing values
+
+If we want to drop rows we can use the `drop_na()` function. `drop_na()` drops rows where any column contains a missing value and we will go into what that means in a bit.
+
+```{r}
+penguins |> 
+  drop_na() 
+```
+
+We see that we went from a dataframe with 344 columns to a dataframe with 333 columns, so 11 rows of data were removed.
+
+
+
+## Summarize data
+
+### Group by and summarize
+
+`group_by()` takes an existing table and converts it into a grouped table where operations are performed "by group". `summarise()` creates a new data frame. It returns one row for each combination of grouping variables; if there are no grouping variables, the output will have a single row summarising all observations in the input.
+
+Useful functions we can use with summarize:
+
+- Center: mean(), median()
+- Spread: sd(), IQR(), mad()
+- Range: min(), max(),
+- Position: first(), last(), nth()
+- Count: n(), n_distinct()
+- Logical: any(), all()
+
+Let's group our data by species and calculate the mean body mass per species:
+
+```{r}
+penguins |> 
+  group_by(species)  |> 
+  summarize(avg_weight = mean(body_mass_g))
+```
+
+Now we see a problem. We get some values for the Chinstrap but not the other two species... Let's try to figure out what the reason is.
+
+To figure this out, lets first summarize some things:
+
+```{r}
+penguins |> 
+  count(species, sex)
+```
+
+If we count the number of observations, we see that we have missing values only for records for the Adelie and Gentoo penguins, for both of these species we could also not calculate the mean.
+
+This means that to be able to summarize our data, we first have to deal with the NAs. As we discussed there are different options, the easiest one is to drop rows where any column contains a missing value.
+
+In the code below, we drop rows with missing data nd we also add a second summary function in which we count the number of observations using the `n()` function. We separate different summary functions with a comma:
+
+```{r}
+penguins |> 
+  drop_na() |> 
+  group_by(species)  |> 
+  summarize(avg_weight = mean(body_mass_g), nr_observations = n())
+```
+
+Now we get average values for all 3 species and can easily see that the Gentoo penguins are the heaviest.
+
+An alternative way to remove missing values is by using `na.rm = TRUE` and `is.na()` functions:
+
+```{r}
+penguins |> 
+  group_by(species)  |> 
+  summarize(avg_weight = mean(body_mass_g, na.rm = TRUE), 
+            nr_observations = sum(!is.na(body_mass_g)))
+```
+
+**We see that the values for the Adelie and Gentoo penguins are slightly different compared to the first calculations, we can also see that the number of observations are different when using the two approaches.**
+
+The difference, is that `drop_na()` drops the full row, regardless where data is missing in our dataframe. In total 11 rows get deleted. In contrast `na.rm = TRUE` only removes NAs if they are found in the body_mass_g column, so only 2 rows are deleted.
+
+In the end its up to you and the experimental setup how you deal with missing data, however, it is important to understand what happens when removing data a certain way.
+
+
+## Exercise
+
+Compare the average flipper length of male and female penguins, calculate the mean, median and standard deviation.
+
+<details>
+    <summary>Click me to see an answer</summary>
+
+```{r}
+penguins |> 
+  drop_na() |> 
+  group_by(sex)  |> 
+  summarize(mean_bill = mean(bill_length_mm),
+            median_bill = median(bill_length_mm),
+            sd_bill = sd(bill_length_mm))
+```
+
+Males seem to have slightly longer bills but since the sd's overlap this might not be significant. Also, we can see there that there is no large difference between the median and mean, so we likely have no outliers.
+
+Notice: in this case it doesn't make a difference if we use drop_na or na.rm=TRUE.
+
+</details>
+
+
+### Addon on `across()`: Summarizing multiple columns with arguments
+
+We can also calculate the mean using `na.rm = True` on more than one data column. One way to do this is this:
+
+```{r}
+penguins |> 
+  group_by(species)  |> 
+  summarize(avg_weight = mean(body_mass_g, na.rm = TRUE),
+            avg_length = mean(bill_length_mm, na.rm = TRUE))
+```
+
+Now, this is fine for a few calculations, but gets tedious very quickly. Luckily, we can use the `across()` function to make our life easier. 
+
+To calculate the mean across all columns, we identify all columns with numeric values using the `where` function and do the same transformations (here calculating the mean) across multiple columns. 
+
+`across()` takes the following inputs:
+
+- Columns we want to transform, here all the columns that are numeric
+- The function we want to apply, here we want to calculate the mean
+- Any additional arguments we want to use, i.e. remove NAs
+
+```{r}
+penguins %>% 
+  group_by(species) %>% 
+  summarize(across(where(is.numeric), mean, na.rm = TRUE))
+```
+
+Of note, when using additional arguments it can be a bit ambiguous how they are used, i.e. is `na.rm` used once per across() or once per group? A newer way to do the same thing (that however requires some additional syntax we have not covered):
+
+```{r}
+penguins %>% 
+  group_by(species) %>% 
+  summarize(across(where(is.numeric),  ~ mean(.x, na.rm = TRUE)))
+```
+
+When we use `~` we use what is called a lambda function, or anonymous function, and we use  `.x` to indicate where the variable in `across()` is used. These two elements come from the purr package and is useful to explore if you want to write effective functions with R.
+
+Explaining the details are out of the scope of this tutorial but if you want to read more about this (and have some good examples for using `across()` check out this [post](https://willhipson.netlify.app/post/dplyr_across/dplyr_across/).
+
+
+
+
