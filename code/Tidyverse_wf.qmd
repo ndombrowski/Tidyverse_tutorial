@@ -269,7 +269,7 @@ penguins |>
 
 ### Filter using more than one column
 
-We can also filter dataframes by setting conditions for different columns. For example, we might want to select data from 2007 and only the Adelie penguins. To do this we specify multiple conditions that we separate by a comma. Each `==` expression is called an argument.
+We can also filter dataframes by setting conditions for different columns. For example, we might want to select data from 2007 and only from Adelie penguins. To do this we specify multiple conditions that we separate by a comma. Each `==` expression is called an argument.
 
 ```{r}
 #only return the data from Adelie penguins collected in 2007
@@ -301,8 +301,6 @@ We work with 104 rows of data.
 
 How would we filter if we wanted data from different targets, i.e. if we only wanted to select data collected from the islands Biscoe and Dream? There are different options.
 
-In the code below, we use our first pipe `|>` to filter our dataframe and then pass it into the nrow function to count the number of rows retained in our dataframe.
-
 1. We could exclude data not matching our criteria
 
 ```{r}
@@ -310,7 +308,9 @@ penguins |>
   filter(island != "Torgersen") |> 
   nrow()
 ```
-However, this is **not ideal** since we have to figure out what the name of the island is that doesn't match our criteria, with larger datasets that might not be as easy.
+In the code above, we use the pipe `|>` to filter our dataframe and then pass it into the `nrow` function to count the number of rows retained in our dataframe.
+
+However, the command above is **not ideal** since we have to figure out what the name of the island is that doesn't match our criteria, with larger datasets that might not be as easy.
 
 2. We could use the OR, `|` , operator:
 
@@ -321,7 +321,7 @@ penguins |>
 ```
 This is definitely better, but requires a lot of typing especially if we have more categories.
 
-3. We use a vector list and filter with it using the `%in%` operator. With it we basically ask whether Biscoe is found in the island column and then whether Dream is found in the same column as well.
+3. We use a vector list and filter with it using the `%in%` operator. With this operator we basically ask whether Biscoe and Dream are found in the same column. If that question is answered with TRUE, then the rows are printed.
 
 ```{r}
 list_of_species <- c("Biscoe", "Dream")
@@ -464,7 +464,7 @@ penguins |>
 
 Arrange sorts the observations in a dataset. This can be useful when you want to know the most extreme data. By default, we sort by starting with the lowest value first.
 
-![](C:/Users/ndmic/WorkingDir/Notebooks/Pictures/tidyverse3.png){width=50% fig-align="center"}
+![](C:/Users/ndmic/WorkingDir/Notebooks/Pictures/tidyverse3.png){width=70% fig-align="center"}
 
 
 ```{r}
@@ -502,7 +502,7 @@ The largest measurements are: 6300, 6050 and 6000 g
 
 Mutate changes or adds variables in your data set.
 
-![](C:/Users/ndmic/WorkingDir/Notebooks/Pictures/tidyverse4.png){width=50% fig-align="center"}
+![](C:/Users/ndmic/WorkingDir/Notebooks/Pictures/tidyverse4.png){width=70% fig-align="center"}
 
 For example, we could change the body mass from the measurement in g to kg using basic math operations.  
 With writing ``body_mass_kg =`` we give the new column with the mutated data a descriptive header. Mutated columns can be found at the end of our table.
@@ -580,7 +580,7 @@ As we said in the beginning, we can use the pipe to combine several verbs.
 Let's identify from what island the species with the three highest bill length measurements came from in the year 2007:
 
 ```{r}
-penguins %>%
+penguins |> 
   filter(year == 2007) |> 
   select(species, island, bill_length_mm) |> 
   arrange(desc(bill_length_mm)) |> 
@@ -724,7 +724,7 @@ The difference, is that `drop_na()` drops the full row, regardless where data is
 In the end its up to you and the experimental setup how you deal with missing data, however, it is important to understand what happens when removing data a certain way.
 
 
-## Exercise
+**Exercise**
 
 Compare the average flipper length of male and female penguins, calculate the mean, median and standard deviation.
 
@@ -749,7 +749,7 @@ Notice: in this case it doesn't make a difference if we use drop_na or na.rm=TRU
 
 ### Addon on `across()`: Summarizing multiple columns with arguments
 
-We can also calculate the mean using `na.rm = True` on more than one data column. One way to do this is this:
+We can also calculate the mean using `na.rm = True` on more than one data column. One way to do this is is:
 
 ```{r}
 penguins |> 
