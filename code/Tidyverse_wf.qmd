@@ -39,7 +39,11 @@ knitr::opts_chunk$set(eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE,
 #devtools::session_info()
 ```
 
-The aim of this tutorial is to introduce students to the key features of the tidyverse using a public dataset (so there are no requirements other to have a working version of R/Rstudio and installing some packages).
+The aim of this tutorial is to introduce students to the key features of the tidyverse using a public dataset (so there are no requirements other to have a working version of R/Rstudio and installing some packages). The exact versions used in this tutorial are: 
+
+- R version 4.2.
+- The palmerpenguins_0.1.1  package
+- The tidyverse_1.3.2 package 
 
 The tidyverse is a collection of data science tools to tidy and visualize data and includes several different R libraries suited for a broad range of tasks:
 
@@ -89,11 +93,8 @@ If in R you want to use the newer version by default go to Tools --> Global opti
 Now, having this out of the way, lets get started with loading our data and learning about some useful verbs in the tidyverse.
 
 
-
 :::{.callout-important}
-
 You might get an error when using `|>` if you are working with an R version below 4.1. If you get an error and can't update or don't want to update R version use `%>%` instead. To be able to use either pipe you need to have the tidyverse library loaded.
-
 :::
 
 
@@ -119,7 +120,10 @@ library(tidyverse)      #tools for transforming and visualizing data
 
 Let's start by taking a look at the first few rows of our dataframe using the `head()` function. 
 
-Notice: If you view the hmtl version of this tutorial you can view more columns of the table by clicking on the little arrow at the top, right-hand corner of the table.
+:::{.callout-tip}
+## Notice: 
+If you are viewing the HTML version, you can see all columns of the table above by clicking on the little arrow on the top, right corner of the table. 
+:::
 
 ```{r}
 head(penguins)
@@ -136,8 +140,8 @@ str(penguins)
 Some key features we can take from this:
 
 - The total amount of data we work with, i.e. 344 rows and 8 columns of data 
-- Te names and content of all 8, i.e. species, bill_length and sex
-- The type of data we have for each columns, i.e. factors, numeric/integer, character
+- Te names and content of all 8 columns, i.e. species, bill_length and sex
+- The type of data we have for each column, i.e. factors, numeric/integer, character
 - The unique levels for some variables, i.e. we compare 3 different penguin species
 - If we look closely, we can see whether or not we have to worry about NAs (i.e. missing data). For example, we see an NA in the sex column.
 
@@ -157,7 +161,7 @@ For each data column we get the number of observations (for factor data) as well
 
 We use filter if we only want to look at only a subset of our observations based on a condition.
 
-![](C:/Users/ndmic/WorkingDir/Notebooks/Pictures/tidverse2.png){width=50% fig-align="center"}
+![](C:/Users/ndmic/WorkingDir/Notebooks/Pictures/tidverse2.png){width=70% fig-align="center"}
 
 To get started, let's only select data from 2007. To do this, we use our first **operator**, i.e. `==`, which only selects rows where the year is exactly 2007. 
 
@@ -177,7 +181,7 @@ penguins |>
 
 Now we see, that we only have 110 row compared to the 334 rows in our original dataframe. 
 
-Something to keep in mind that when doing this the original penguins dataframe is retained. Filter is simply returning a new dataset with fewer rows to the screen but not storing it. If we want to store the modified dataframe in our environment, we need to store it in a new variable like this:
+Something to keep in mind that when doing this the original penguins dataframe is not changed Filter is simply returning a new dataset with fewer rows to the screen but not storing it in the R environment. If we want to store the modified dataframe in our environment, we need to store it in a new variable like this:
 
 ```{r}
 #store the output of the filtering step in a new variable, penguins_2017
@@ -185,7 +189,7 @@ penguins_2017 <-
   penguins |>
     filter(year == 2007)
 
-#view the content of penguins_2017
+#view the content of our modified dataframe by using the penguins_2017 variable
 head(penguins_2017)
 ```
 
@@ -296,6 +300,8 @@ We work with 104 rows of data.
 ### Using filter with several targets
 
 How would we filter if we wanted data from different targets, i.e. if we only wanted to select data collected from the islands Biscoe and Dream? There are different options.
+
+In the code below, we use our first pipe `|>` to filter our dataframe and then pass it into the nrow function to count the number of rows retained in our dataframe.
 
 1. We could exclude data not matching our criteria
 
