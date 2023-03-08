@@ -100,6 +100,11 @@ You might get an error when using `|>` if you are working with an R version belo
 
 ## Initial data exploration
 
+:::{.callout-tip}
+## Notice: 
+If you are opening the notebook version (i.e. the qmd file) of this tutorial, you will sometimes see a little comment before the actual code, i.e. `#| eval: false`. This comment simply controls how the code chunk behaves when rendering the document to a HTML and can be ignored when following the tutorial via the qmd file.
+:::
+
 For this tutorial to run we need to install some tools first. Specifically, we need to download the tools of the tidyverse and the data we will explore today. To do this type and execute the following into your R notebook or console:
 
 ```{r}
@@ -108,7 +113,7 @@ install.packages("palmerpenguins")
 install.packages("tidyverse")
 ```
 
-Once this is done, we can start by loading the packages:
+Once you have everything installed you load the libraries. Keep in mind, while you only need to install libraries once you need to load the libraries for every new R session.
 
 ```{r}
 #| eval: true
@@ -665,7 +670,11 @@ We see that we went from a dataframe with 344 columns to a dataframe with 333 co
 
 ### Group by and summarize
 
-`group_by()` takes an existing table and converts it into a grouped table where operations are performed "by group". `summarise()` creates a new data frame. It returns one row for each combination of grouping variables; if there are no grouping variables, the output will have a single row summarising all observations in the input.
+`group_by()` takes an existing table and converts it into a grouped table where operations are performed "by group". This function does not change how the data looks to us, however, it changes the underlying structure of  the dataframe. Whenever groups are specified the functions that follow are performed separately on each level of the grouping variable. 
+
+`summarise()` creates a new data frame. It returns one row for each combination of grouping variables; if there are no grouping variables, the output will have a single row summarising all observations in the input.
+
+`group()` removes any grouping structure from our data frame. It is recommended to always `ungroup()` when we are done with your calculations especially if we store the output of our calculations in a dataframe.
 
 Useful functions we can use with summarize:
 
@@ -681,7 +690,8 @@ Let's group our data by species and calculate the mean body mass per species:
 ```{r}
 penguins |> 
   group_by(species)  |> 
-  summarize(avg_weight = mean(body_mass_g))
+  summarize(avg_weight = mean(body_mass_g)) |> 
+  ungroup()
 ```
 
 Now we see a problem. We get some values for the Chinstrap but not the other two species... Let's try to figure out what the reason is.
@@ -703,7 +713,8 @@ In the code below, we drop rows with missing data nd we also add a second summar
 penguins |> 
   drop_na() |> 
   group_by(species)  |> 
-  summarize(avg_weight = mean(body_mass_g), nr_observations = n())
+  summarize(avg_weight = mean(body_mass_g), nr_observations = n()) |> 
+  ungroup()
 ```
 
 Now we get average values for all 3 species and can easily see that the Gentoo penguins are the heaviest.
@@ -714,7 +725,8 @@ An alternative way to remove missing values is by using `na.rm = TRUE` and `is.n
 penguins |> 
   group_by(species)  |> 
   summarize(avg_weight = mean(body_mass_g, na.rm = TRUE), 
-            nr_observations = sum(!is.na(body_mass_g)))
+            nr_observations = sum(!is.na(body_mass_g))) |> 
+  ungroup()
 ```
 
 **We see that the values for the Adelie and Gentoo penguins are slightly different compared to the first calculations, we can also see that the number of observations are different when using the two approaches.**
@@ -737,7 +749,8 @@ penguins |>
   group_by(sex)  |> 
   summarize(mean_bill = mean(bill_length_mm),
             median_bill = median(bill_length_mm),
-            sd_bill = sd(bill_length_mm))
+            sd_bill = sd(bill_length_mm)) |> 
+  ungroup()
 ```
 
 Males seem to have slightly longer bills but since the sd's overlap this might not be significant. Also, we can see there that there is no large difference between the median and mean, so we likely have no outliers.
@@ -745,6 +758,38 @@ Males seem to have slightly longer bills but since the sd's overlap this might n
 Notice: in this case it doesn't make a difference if we use drop_na or na.rm=TRUE.
 
 </details>
+
+
+:::{.callout-tip}
+## Notice: 
+Let us briefly discuss why ungrouping is important. Let's assume we want to calculate the average body mass for each species and add it as a new column to our dataframe. Additionally, we want to calculate the total number of observations.
+
+```{r}
+penguins |> 
+  select(species, body_mass_g) |> 
+  group_by(species)  |> 
+  #calculate mean body mass
+  mutate(mean_bm = mean(body_mass_g, na.rm = TRUE)) |> 
+  #calculate nr of observations by species
+  mutate(observations = n()) |> 
+  ungroup()
+```
+
+Now, let us do the same but instead ungroup before the second mutate statement:
+
+```{r}
+penguins |> 
+  select(species, body_mass_g) |> 
+  group_by(species)  |> 
+  #calculate mean body mass
+  mutate(mean_bm = mean(body_mass_g, na.rm = TRUE)) |> 
+  ungroup() |> 
+  #calculate nr of all species measured
+  mutate(observations = n())
+```
+
+We can see how the number of observation changes, the first is calculated on the grouped the second on the ungrouped data. No number is wrong, however, this exemplifies that you need to be aware of how the grouping is applied ESPECIALLY if you save the output in a variable and use it for other calculations.
+:::
 
 
 ### Addon on `across()`: Summarizing multiple columns with arguments
