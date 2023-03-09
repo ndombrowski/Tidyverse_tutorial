@@ -6,6 +6,7 @@ execute:
   eval: true
 format:
   html:
+    number-sections: true
     fig-width: 5
     fig-height: 4
     embed-resources: true
@@ -58,7 +59,7 @@ The tidyverse is a collection of data science tools to tidy and visualize data a
 
 The basic workflow in tidying and visualizing data usually looks as follows:
 
-![](C:/Users/ndmic/WorkingDir/Notebooks/Pictures/tidverse1.png){width=90% fig-align="left"}
+![](C:/Users/ndmic/WorkingDir/Notebooks/Pictures/tidverse1.png){width=75% fig-align="left"}
 
 In this tutorial we will learn about the Tidyverse by exploring the palmerpenguins dataset, a data set containing measurements of three different species of penguins. 
 
@@ -113,7 +114,7 @@ install.packages("palmerpenguins")
 install.packages("tidyverse")
 ```
 
-Once you have everything installed you load the libraries. Keep in mind, while you only need to install libraries once you need to load the libraries for every new R session.
+Once you have everything installed you neet to load the libraries. Keep in mind, while you only need to install libraries once you need to load the libraries for every new R session.
 
 ```{r}
 #| eval: true
@@ -123,7 +124,7 @@ library(palmerpenguins)  #contains our dataset
 library(tidyverse)      #tools for transforming and visualizing data
 ```
 
-Let's start by taking a look at the first few rows of our dataframe using the `head()` function. 
+Let's start exploring our data first by taking a look at the first few rows of our dataframe using the `head()` function. 
 
 :::{.callout-tip}
 ## Notice: 
@@ -136,13 +137,13 @@ head(penguins)
 
 We see that we have 8 column of data, with different categorical data (species, sex and island) as well as different numerical measurements.
 
-Next, let's look a bit in more detail at the structure of the data:
+Next, let's look a bit in more detail at the structure of the data using the `str` function:
 
 ```{r}
 str(penguins)
 ```
 
-Some key features we can take from this:
+Some key features we can take from this output:
 
 - The total amount of data we work with, i.e. 344 rows and 8 columns of data 
 - Te names and content of all 8 columns, i.e. species, bill_length and sex
@@ -159,16 +160,14 @@ summary(penguins)
 For each data column we get the number of observations (for factor data) as well as basic summary statistics for all numerical data. Another useful piece of information we get is the number of missing values for each column. 
 
 
-
-## Useful verbs
-
 ## Filter
 
-We use filter if we only want to look at only a subset of our observations based on a condition.
+We can use the `filter` function if we want to look at only a subset of our observations based on a condition.
 
 ![](C:/Users/ndmic/WorkingDir/Notebooks/Pictures/tidverse2.png){width=70% fig-align="center"}
 
-To get started, let's only select data from 2007. To do this, we use our first **operator**, i.e. `==`, which only selects rows where the year is exactly 2007. 
+To get started, let's only select data from 2007.  
+To do this, we use our first **operator**, i.e. `==`, which allows us to only select rows where the year is exactly 2007. 
 
 In the syntax below, we use the pipe to input the penguins dataframe into the filter function.
 
@@ -186,16 +185,16 @@ penguins |>
 
 Now we see, that we only have 110 row compared to the 334 rows in our original dataframe. 
 
-Something to keep in mind that when doing this the original penguins dataframe is not changed Filter is simply returning a new dataset with fewer rows to the screen but not storing it in the R environment. If we want to store the modified dataframe in our environment, we need to store it in a new variable like this:
+Something to keep in mind that when doing this the original penguins dataframe is not changed. Filter is simply returning a new dataset with fewer rows to the screen but not storing it in the R environment. If we want to store the modified dataframe in our environment, we need to store it in a new variable like this:
 
 ```{r}
-#store the output of the filtering step in a new variable, penguins_2017
-penguins_2017 <-
+#store the output of the filtering step in a new variable, penguins_2007
+penguins_2007 <-
   penguins |>
     filter(year == 2007)
 
 #view the content of our modified dataframe by using the penguins_2017 variable
-head(penguins_2017)
+head(penguins_2007)
 ```
 
 There are other operators that might come in handy for filtering dataframes:
@@ -213,7 +212,7 @@ There are other operators that might come in handy for filtering dataframes:
 | x & y    	| x AND y                  	|
 
 
-### Exercise
+**Exercise**
 
 1. How many observations, i.e. rows of data, do we have for the year 2009? 
 2. How many observations, i.e. rows of data, do we have if we only consider penguins that have flippers equal to or longer than 200 mm?
@@ -285,7 +284,7 @@ penguins |>
 
 
 
-### Exercise
+**Exercise**
 
 **How many observations do we have when we exclude data from 2008 and only look at penguins observed on the island Biscoe?**
 
@@ -315,7 +314,7 @@ penguins |>
 ```
 In the code above, we use the pipe `|>` to filter our dataframe and then pass it into the `nrow` function to count the number of rows retained in our dataframe.
 
-However, the command above is **not ideal** since we have to figure out what the name of the island is that doesn't match our criteria, with larger datasets that might not be as easy.
+However, the command above is **not ideal** since we have to figure out or know by heart what the name of the island is that doesn't match our criteria, with larger datasets that might not be as easy.
 
 2. We could use the OR, `|` , operator:
 
@@ -329,20 +328,19 @@ This is definitely better, but requires a lot of typing especially if we have mo
 3. We use a vector list and filter with it using the `%in%` operator. With this operator we basically ask whether Biscoe and Dream are found in the same column. If that question is answered with TRUE, then the rows are printed.
 
 ```{r}
-list_of_species <- c("Biscoe", "Dream")
+list_of_islands <- c("Biscoe", "Dream")
   
 penguins |>
-  filter(island %in% list_of_species) |> 
+  filter(island %in% list_of_islands) |> 
   nrow()
 ```
-
-Generally, this is the preferred option, since we can easily re-use `list_of_species` for other things and its easy to see how we can add a long list of characters into it. 
-
+Generally, this is the preferred option, since we can easily re-use `list_of_islands` for other things and its easy to see how we can add a long list of characters into it. 
 
 
-### Exercise
 
-**How many observations do we have for Adelie and Gentoo penguins in 2007 ?**
+**Exercise**
+
+**How many observations do we have for Adelie and Gentoo penguins in 2007?**
 
 <details>
     <summary>Click me to see an answer</summary>
@@ -595,7 +593,7 @@ penguins |>
 
 
 
-## Exercise
+**Exercise**
 
 Answer the following question:
 
@@ -621,12 +619,7 @@ Answer: 6.30 kg and from Biscoe.
 
 ## Missing values
 
-When we initially explored our data frame, we saw some data was missing (i.e. NA = not applicable).  
-
-With some other datasets you might encounter Nan, which is used for data not representing a number.
-
-
-### Exercise
+When we initially explored our data frame, we saw some data was missing (i.e. NA = not applicable). With some other datasets you might encounter Nan, which is used for data not representing a number.
 
 As we have seen when we explored our dataframe in the beginning, some columns contain missing data.
 
